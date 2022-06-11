@@ -1,28 +1,25 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 
-// Слушаем 3000 порт
-const { PORT = 3000 } = process.env;
-
+const { PORT = 3000 } = process.env; // Слушаем 3000 порт
 const app = express();
 
 // подключаемся к серверу mongo
-mongoose.connect('mongodb://localhost:27017/mestodb', {
-  // useNewUrlParser: true,
-  // useCreateIndex: true,
-  // useFindAndModify: false
-});
+mongoose.connect('mongodb://localhost:27017/mestodb');
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
+// временное решение авторизации
 app.use((req, res, next) => {
   req.user = {
-    _id: '5d8b8592978f8bd833ca8133' // вставьте сюда _id созданного в предыдущем пункте пользователя
+    _id: '62a22b178d18b6ca3e196b0b',
   };
-
   next();
 });
 
-app.listen(PORT, () => {
-  // Если всё работает, консоль покажет, какой порт приложение слушает
-  console.log(`App listening on port ${PORT}`)
-})
+app.use('/users', require('./routes/users'));
+app.use('/cards', require('./routes/cards'));
+
+app.listen(PORT);
