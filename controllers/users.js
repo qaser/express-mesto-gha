@@ -9,7 +9,7 @@ module.exports.getUsers = (req, res) => {
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .then((user) => res.send({ user }))
+    .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
@@ -21,10 +21,10 @@ module.exports.createUser = (req, res) => {
 module.exports.getUserById = (req, res) => {
   User.findById(req.user._id)
     .then((user) => {
-      if (!user) {
+      if (!user._id) {
         res.status(404).send({ message: 'Пользователь по указанному _id не найден' });
       }
-      res.send({ user });
+      res.status(200).send(user);
     })
     .catch((err) => res.status(500).send({ message: err.message }));
 };
