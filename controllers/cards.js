@@ -38,6 +38,9 @@ module.exports.likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
+    .orFail(() => {
+      res.status(404).send({ message: 'Передан несуществующий _id карточки' });
+    })
     .then((card) => {
       if (!card) {
         res.status(404).send({ message: 'Передан несуществующий _id карточки' });
