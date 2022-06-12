@@ -2,8 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
-const routerError = require('./routes/error');
-
 const { PORT = 3000 } = process.env; // Слушаем 3000 порт
 const app = express();
 
