@@ -21,9 +21,9 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(routerError);
+
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
-
-app.use(routerError);
 
 app.listen(PORT);
