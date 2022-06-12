@@ -21,7 +21,7 @@ module.exports.createUser = (req, res) => {
 module.exports.getUserById = (req, res) => {
   User.findById(req.user._id)
     .then((user) => {
-      if (!user._id) {
+      if (!user) {
         res.status(404).send({ message: 'Пользователь по указанному _id не найден' });
       }
       res.status(200).send(user);
@@ -36,7 +36,7 @@ module.exports.updateUser = (req, res) => {
       if (!user) {
         res.status(404).send({ message: 'Пользователь с указанным _id не найден' });
       }
-      res.send({ user });
+      res.status(200).send({ user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
