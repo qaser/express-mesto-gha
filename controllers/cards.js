@@ -55,15 +55,18 @@ module.exports.dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
   )
+    .orFail(() => {
+      res.status(404).send({ message: 'Передан несуществующий _id карточки' });
+    })
     .then((card) => {
       if (!card) {
         res.status(404).send({ message: 'Передан несуществующий _id карточки' });
       }
-      res.send({ card });
+      res.status(200).send({ card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
+        res.status(404).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
       }
       res.status(500).send({ message: err.message });
     });
