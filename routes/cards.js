@@ -13,8 +13,4 @@ router.delete('/:cardId', deleteCard);
 router.put('/:cardId/likes', likeCard);
 router.delete('/:cardId/likes', dislikeCard);
 
-router.use((req) => {
-  req.status(404).send({ message: 'Данный путь не найден' });
-});
-
 module.exports = router;
