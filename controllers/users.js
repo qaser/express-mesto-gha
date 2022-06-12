@@ -34,7 +34,7 @@ module.exports.getUserById = (req, res) => {
 
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail(() => {
       res.status(404).send({ message: 'Пользователь с указанным _id не найден' });
     })
