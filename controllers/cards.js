@@ -5,7 +5,7 @@ const errorBadRequest = 'Передан несуществующий _id кар�
 module.exports.getCards = (req, res) => {
   Card.find()
     .then((cards) => res.send(cards))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(() => res.status(500).send({ message: 'Ошибка сервера' }));
 };
 
 module.exports.createCard = (req, res) => {
@@ -16,7 +16,7 @@ module.exports.createCard = (req, res) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные при создании карточки' });
       }
-      res.status(500).send({ message: err.message });
+      res.status(500).send({ message: 'Ошибка сервера' });
     });
 };
 
@@ -26,7 +26,7 @@ module.exports.deleteCard = (req, res) => {
       res.status(404).send({ message: 'Карточка с указанным _id не найдена.' });
     })
     .then((card) => {
-      if (!card) {
+      if (!card._id) {
         res.status(404).send({ message: 'Карточка с указанным _id не найдена.' });
       }
       res.status(200).send({ message: 'Карточка удалена' });
@@ -34,7 +34,7 @@ module.exports.deleteCard = (req, res) => {
     .catch((err) => res.status(400).send({ message: err.message }));
 };
 
-module.exports.likeCard = (req, res, next) => {
+module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -53,11 +53,11 @@ module.exports.likeCard = (req, res, next) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
       }
-      next(err);
+      res.status(500).send({ message: 'Ошибка сервера' });
     });
 };
 
-module.exports.dislikeCard = (req, res, next) => {
+module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
@@ -76,6 +76,6 @@ module.exports.dislikeCard = (req, res, next) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
       }
-      next(err);
+      res.status(500).send({ message: 'Ошибка сервера' });
     });
 };
