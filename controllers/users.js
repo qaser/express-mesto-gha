@@ -28,7 +28,12 @@ module.exports.getUserById = (req, res) => {
     .then((user) => {
       res.status(200).send(user);
     })
-    .catch(() => res.status(400).send({ message: 'Ошибка сервера' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Переданы некорректные данные' });
+      }
+      res.status(500).send({ message: 'Ошибка сервера' });
+    });
 };
 
 module.exports.updateUser = (req, res) => {
