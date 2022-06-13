@@ -24,7 +24,7 @@ app.use('/cards', require('./routes/cards'));
 
 // обработка некорректного адреса
 app.use((req, res, next) => {
-  res.status(404).send({ message: 'Адрес запроса неверен' });
+  res.status(404).send({ message: 'Проверьте адрес запроса' });
   next();
 });
 
