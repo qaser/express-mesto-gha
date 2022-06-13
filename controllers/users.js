@@ -5,7 +5,7 @@ const errorBadRequest = 'Пользователь по указанному _id 
 module.exports.getUsers = (req, res) => {
   User.find()
     .then((users) => res.send({ users }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(() => res.status(500).send({ message: 'Ошибка сервера' }));
 };
 
 module.exports.createUser = (req, res) => {
@@ -14,9 +14,9 @@ module.exports.createUser = (req, res) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
+        res.status(400).send({ message: err.message });
       }
-      res.status(500).send({ message: err.message });
+      res.status(500).send({ message: 'Ошибка сервера' });
     });
 };
 
@@ -26,12 +26,9 @@ module.exports.getUserById = (req, res) => {
       res.status(404).send({ message: errorBadRequest });
     })
     .then((user) => {
-      if (!user._id) {
-        res.status(404).send({ message: errorBadRequest });
-      }
       res.status(200).send(user);
     })
-    .catch((err) => res.status(400).send({ message: err.message }));
+    .catch(() => res.status(400).send({ message: 'Ошибка сервера' }));
 };
 
 module.exports.updateUser = (req, res) => {
@@ -41,16 +38,13 @@ module.exports.updateUser = (req, res) => {
       res.status(404).send({ message: errorBadRequest });
     })
     .then((user) => {
-      if (!user) {
-        res.status(404).send({ message: errorBadRequest });
-      }
       res.status(200).send({ user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
+        res.status(400).send({ message: err.message });
       }
-      res.status(500).send({ message: err.message });
+      res.status(500).send({ message: 'Ошибка сервера' });
     });
 };
 
@@ -68,8 +62,8 @@ module.exports.updateUserAvatar = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара' });
+        res.status(400).send({ message: err.message });
       }
-      res.status(500).send({ message: err.message });
+      res.status(500).send({ message: 'Ошибка сервера' });
     });
 };

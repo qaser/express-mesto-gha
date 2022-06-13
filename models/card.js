@@ -4,13 +4,13 @@ const mongoose = require('mongoose');
 const cardSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Поле "name" обязательно для ввода'],
+    required: [true, 'Поле (name) обязательно для ввода'],
     minlength: [2, 'Длина значения должна быть более 2 символов'],
-    maxlength: [30, 'Длина значения должна быть более 2 символов'],
+    maxlength: [30, 'Длина значения должна быть не более 30 символов'],
   },
   link: {
     type: String,
-    required: [true, 'Поле "link" обязательно для ввода'],
+    required: [true, 'Поле (link) обязательно для ввода'],
     validate: {
       validator(v) {
         return v.includes('http');
@@ -21,7 +21,7 @@ const cardSchema = new mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
-    required: [true, 'Поле "owner" обязательно для ввода'],
+    required: [true, 'Поле (owner) обязательно для ввода'],
   },
   likes: [{
     type: mongoose.Schema.Types.ObjectId,
