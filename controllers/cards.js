@@ -31,7 +31,12 @@ module.exports.deleteCard = (req, res) => {
       }
       res.status(200).send({ message: 'Карточка удалена' });
     })
-    .catch((err) => res.status(400).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Переданы некорректные данные для удаления карточки' });
+      }
+      res.status(500).send({ message: 'Ошибка сервера' });
+    });
 };
 
 module.exports.likeCard = (req, res) => {
