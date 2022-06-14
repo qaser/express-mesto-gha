@@ -48,6 +48,8 @@ module.exports.updateUser = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: err.message });
+      } else if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Передан некорректный id пользователя' });
       }
       res.status(500).send({ message: 'Ошибка сервера' });
     });
@@ -57,7 +59,7 @@ module.exports.updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
     .orFail(() => {
-      res.status(404).send({ message: 'Переданы некорректные данные при обновлении аватара' });
+      res.status(404).send({ message: errorBadRequest });
     })
     .then((user) => {
       if (!user) {
@@ -68,6 +70,8 @@ module.exports.updateUserAvatar = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: err.message });
+      } else if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Передан некорректный id пользователя' });
       }
       res.status(500).send({ message: 'Ошибка сервера' });
     });
