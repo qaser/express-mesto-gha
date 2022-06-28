@@ -17,9 +17,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use('/cards', require('./routes/cards'));
-app.use('/users', require('./routes/users'));
-
 app.post('/signup', registerValid, createUser);
 app.post('/signin', loginValid, login);
 
@@ -32,6 +29,9 @@ app.use((req, res, next) => {
 // app.use(errorLoger);
 
 app.use(auth);
+
+app.use('/cards', require('./routes/cards'));
+app.use('/users', require('./routes/users'));
 
 app.use(errors());
 
