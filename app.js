@@ -3,7 +3,7 @@ const { errors } = require('celebrate');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const auth = require('./middlewares/auth');
-const errorHandler = require('./middlewares/errorHandler');
+// const errorHandler = require('./middlewares/errorHandler');
 const { registerValid, loginValid } = require('./middlewares/validationJoi');
 const { createUser, login } = require('./controllers/users');
 // const { requestLogger, errorLoger } = require('./middlewares/logger');
@@ -34,6 +34,6 @@ app.use(auth);
 
 app.use(errors());
 
-app.use(errorHandler);
+// app.use(errorHandler);
 
 app.listen(PORT);
