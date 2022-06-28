@@ -1,9 +1,9 @@
-const bcrypt = require('bcrypt');
+// const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const NotFoundError = require('../errors/NotFoundError');
-const ConflictError = require('../errors/ConflictError');
-const BadRequestError = require('../errors/BadRequestError');
+// const NotFoundError = require('../errors/NotFoundError');
+// const ConflictError = require('../errors/ConflictError');
+// const BadRequestError = require('../errors/BadRequestError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 
 const errorBadRequest = 'Пользователь по указанному _id не найден';
