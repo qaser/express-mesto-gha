@@ -5,7 +5,7 @@ const ForbiddenError = require('../errors/ForbiddenError');
 
 // const errorBadRequest = 'Передан несуществующий _id карточки';
 
-module.exports.getCard = (_req, res, next) => {
+module.exports.getCards = (_req, res, next) => {
   Card.find({})
     .populate('owner')
     .then((card) => res.send(card))
