@@ -31,19 +31,19 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  const cardDelete = () => {
-    Card.findByIdAndRemove(req.params.cardId)
-      .orFail(new NotFoundError('Карточка не найдена'))
-      .then((card) => {
-        res.send(card);
-      })
-      .catch((err) => {
-        if (err.name === 'CastError') {
-          throw new BadRequestError('Введен некорректный id');
-        }
-        next(err);
-      });
-  };
+  // const cardDelete = () => {
+  //   Card.findByIdAndRemove(req.params.cardId)
+  //     .orFail(new NotFoundError('Карточка не найдена'))
+  //     .then((card) => {
+  //       res.send(card);
+  //     })
+  //     .catch((err) => {
+  //       if (err.name === 'CastError') {
+  //         throw new BadRequestError('Введен некорректный id');
+  //       }
+  //       next(err);
+  //     });
+  // };
 
   Card.findById(req.params.cardId)
     .orFail(new NotFoundError('Карточка не найдена'))
@@ -51,7 +51,11 @@ module.exports.deleteCard = (req, res, next) => {
       if (req.user._id !== card.owner.toString()) {
         throw new ForbiddenError('Вы не можете удалить данную карточку');
       }
-      cardDelete();
+      // cardDelete();
+      return card.remove();
+    })
+    .then((card) => {
+      res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
