@@ -1,9 +1,9 @@
 // const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-// const NotFoundError = require('../errors/NotFoundError');
+const NotFoundError = require('../errors/NotFoundError');
 // const ConflictError = require('../errors/ConflictError');
-// const BadRequestError = require('../errors/BadRequestError');
+const BadRequestError = require('../errors/BadRequestError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 
 const errorBadRequest = 'Пользователь по указанному _id не найден';
@@ -12,6 +12,23 @@ module.exports.getUsers = (req, res) => {
   User.find()
     .then((users) => res.send({ users }))
     .catch(() => res.status(500).send({ message: 'Ошибка сервера' }));
+};
+
+module.exports.getUserMe = (req, res, next) => {
+  User.findById(req.user._id)
+    .then((user) => {
+      if (!user._id) {
+        next(new NotFoundError('Пользователь не найден'));
+      }
+      res.status(200).send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Переданы некорректные данные.'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.createUser = (req, res) => {
