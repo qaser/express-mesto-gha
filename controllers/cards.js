@@ -54,16 +54,14 @@ module.exports.likeCard = (req, res, next) => {
     { new: true },
   )
     .orFail(() => {
-      throw new NotFoundError(
-        `Запрашиваемая карточка с id ${req.params.cardId} не найдена`,
-      );
+      throw new NotFoundError({ message: 'Карточка не найдена' });
     })
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError({ message: 'Переданы некорректные данные' }));
       }
-      return next(err);
+      res.status(500).send({ message: 'Ошибка сервера' });
     });
 };
 
@@ -74,11 +72,11 @@ module.exports.dislikeCard = (req, res, next) => {
     { new: true },
   )
     .orFail(() => {
-      throw new NotFoundError('Карточка не найдена');
+      throw new NotFoundError({ message: 'Карточка не найдена' });
     })
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Карточка не найдена');
+        throw new NotFoundError({ message: 'Карточка не найдена' });
       }
       res.status(200).send({ card });
     })
