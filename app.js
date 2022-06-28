@@ -2,7 +2,7 @@ const express = require('express');
 const { errors } = require('celebrate');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-// const auth = require('./middlewares/auth');
+const auth = require('./middlewares/auth');
 const errorHandler = require('./middlewares/errorHandler');
 const { registerValid, loginValid } = require('./middlewares/validationJoi');
 const { createUser, login } = require('./controllers/users');
@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.post('/signin', loginValid, login);
 app.post('/signup', registerValid, createUser);
 
-// app.use(auth);
+app.use(auth);
 
 app.use('/cards', require('./routes/cards'));
 app.use('/users', require('./routes/users'));
