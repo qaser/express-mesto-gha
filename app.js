@@ -18,6 +18,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/cards', require('./routes/cards'));
+app.use('/users', require('./routes/users'));
 
 app.post('/signup', registerValid, createUser);
 app.post('/signin', loginValid, login);
