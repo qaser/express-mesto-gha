@@ -1,11 +1,12 @@
 const express = require('express');
-// const { errors } = require('celebrate');
+const { errors } = require('celebrate');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const auth = require('./middlewares/auth');
 const errorHandler = require('./middlewares/errorHandler');
 const { registerValid, loginValid } = require('./middlewares/validationJoi');
 const { createUser, login } = require('./controllers/users');
+const NotFoundError = require('./errors/NotFoundError');
 // const { requestLogger, errorLoger } = require('./middlewares/logger');
 
 const { PORT = 3000 } = process.env; // Слушаем 3000 порт
@@ -29,11 +30,10 @@ app.use('/users', require('./routes/users'));
 
 // обработка некорректного адреса
 app.use((req, res, next) => {
-  res.status(404).send({ message: 'Проверьте адрес запроса' });
-  next();
+  next(new NotFoundError('Страница не найдена'));
 });
 
-// app.use(errors());
+app.use(errors());
 
 app.use(errorHandler);
 
