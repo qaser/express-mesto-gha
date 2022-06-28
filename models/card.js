@@ -1,5 +1,6 @@
 // models/user.js
 const mongoose = require('mongoose');
+const { isURL } = require('validator');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -12,9 +13,7 @@ const cardSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Поле (link) обязательно для ввода'],
     validate: {
-      validator(v) {
-        return v.includes('http');
-      },
+      validator: (v) => isURL(v, { required_protocol: true }),
       message: 'Это значение должно содержать url',
     },
   },

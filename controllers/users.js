@@ -1,4 +1,10 @@
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const NotFoundError = require('../errors/NotFoundError');
+const ConflictError = require('../errors/ConflictError');
+const BadRequestError = require('../errors/BadRequestError');
+const UnauthorizedError = require('../errors/UnauthorizedError');
 
 const errorBadRequest = 'Пользователь по указанному _id не найден';
 
@@ -74,5 +80,25 @@ module.exports.updateUserAvatar = (req, res) => {
         res.status(400).send({ message: 'Передан некорректный id пользователя' });
       }
       res.status(500).send({ message: 'Ошибка сервера' });
+    });
+};
+
+module.exports.login = (req, res, next) => {
+  const { email, password } = req.body;
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      res.cookie('jwt', token, {
+        maxAge: 3600000 * 24 * 7,
+        httpOnly: true,
+        sameSite: true,
+      });
+      res.status(201).send({ message: 'Авторизация успешна', token });
+    })
+    .catch((err) => {
+      if (err.message === 'IncorrectEmail') {
+        next(new UnauthorizedError('Не правильный логин или пароль'));
+      }
+      next(err);
     });
 };
