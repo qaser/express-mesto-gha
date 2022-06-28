@@ -5,13 +5,13 @@ const { isURL } = require('validator');
 const cardSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Поле (name) обязательно для ввода'],
-    minlength: [2, 'Длина значения должна быть более 2 символов'],
-    maxlength: [30, 'Длина значения должна быть не более 30 символов'],
+    required: true,
+    minlength: 2,
+    maxlength: 30,
   },
   link: {
     type: String,
-    required: [true, 'Поле (link) обязательно для ввода'],
+    required: true,
     validate: {
       validator: (v) => isURL(v, { required_protocol: true }),
       message: 'Это значение должно содержать url',
@@ -20,7 +20,7 @@ const cardSchema = new mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
-    required: [true, 'Поле (owner) обязательно для ввода'],
+    required: true,
   },
   likes: [{
     type: mongoose.Schema.Types.ObjectId,

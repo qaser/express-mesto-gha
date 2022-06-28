@@ -57,7 +57,6 @@ module.exports.createUser = (req, res, next) => {
     email,
     password,
   } = req.body;
-
   User.findOne({ email })
     .then((user) => {
       if (user) {
