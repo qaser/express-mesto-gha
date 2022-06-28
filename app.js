@@ -17,21 +17,21 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.post('/signin', loginValid, login);
+app.post('/signup', registerValid, createUser);
+
+app.use(auth);
+
 app.use('/cards', require('./routes/cards'));
 app.use('/users', require('./routes/users'));
 
-app.post('/signup', registerValid, createUser);
-app.post('/signin', loginValid, login);
+// app.use(errorLoger);
 
 // обработка некорректного адреса
 app.use((req, res, next) => {
   res.status(404).send({ message: 'Проверьте адрес запроса' });
   next();
 });
-
-// app.use(errorLoger);
-
-app.use(auth);
 
 app.use(errors());
 
