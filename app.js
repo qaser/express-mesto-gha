@@ -26,12 +26,10 @@ app.use((req, res, next) => {
   next();
 });
 
-// app.use(errorLoger);
-
-app.use(auth);
-
 app.use('/cards', require('./routes/cards'));
 app.use('/users', require('./routes/users'));
+
+app.use(auth);
 
 app.use(errors());
 
