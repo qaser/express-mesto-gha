@@ -81,7 +81,7 @@ module.exports.createUser = (req, res, next) => {
       } else if (err.code === 11000) {
         next(new ConflictError({ message: err.errorMessage }));
       } else {
-        next(err);
+        res.status(500).send({ message: 'Ошибка сервера' });
       }
     });
 };
@@ -102,7 +102,7 @@ module.exports.updateUser = (req, res, next) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные'));
       }
-      next(err);
+      res.status(500).send({ message: 'Ошибка сервера' });
     });
 };
 
@@ -122,7 +122,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные'));
       }
-      next(err);
+      res.status(500).send({ message: 'Ошибка сервера' });
     });
 };
 
@@ -142,6 +142,6 @@ module.exports.login = (req, res, next) => {
       if (err.message === 'IncorrectEmail') {
         next(new UnauthorizedError('Не правильный логин или пароль'));
       }
-      next(err);
+      res.status(500).send({ message: 'Ошибка сервера' });
     });
 };
