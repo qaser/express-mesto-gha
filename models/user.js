@@ -41,21 +41,5 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-// userSchema.statics.findUserByCredentials = function (email, password) {
-//   return this.findOne({ email }).select('+password')
-//     .then((user) => {
-//       if (!user) {
-//         throw new Unauthorized({ message: 'Указан некорректный Email или пароль.' });
-//       }
-//       return bcrypt.compare(password, user.password)
-//         .then((matched) => {
-//           if (!matched) {
-//             throw new Unauthorized({ message: 'Указан некорректный Email или пароль.' });
-//           }
-//           return user;
-//         });
-//     });
-// };
-
 // создаём модель и экспортируем её
 module.exports = mongoose.model('user', userSchema);

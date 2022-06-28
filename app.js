@@ -1,5 +1,5 @@
 const express = require('express');
-const { errors } = require('celebrate');
+// const { errors } = require('celebrate');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const auth = require('./middlewares/auth');
@@ -33,7 +33,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(errors());
+// app.use(errors());
 
 app.use(errorHandler);
 
