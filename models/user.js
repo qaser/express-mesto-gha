@@ -1,8 +1,8 @@
 // models/user.js
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+// const bcrypt = require('bcrypt');
 const { isEmail, isURL } = require('validator');
-const Unauthorized = require('../errors/UnauthorizedError');
+// const Unauthorized = require('../errors/UnauthorizedError');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -41,21 +41,21 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.statics.findUserByCredentials = function (email, password) {
-  return this.findOne({ email }).select('+password')
-    .then((user) => {
-      if (!user) {
-        throw new Unauthorized({ message: 'Указан некорректный Email или пароль.' });
-      }
-      return bcrypt.compare(password, user.password)
-        .then((matched) => {
-          if (!matched) {
-            throw new Unauthorized({ message: 'Указан некорректный Email или пароль.' });
-          }
-          return user;
-        });
-    });
-};
+// userSchema.statics.findUserByCredentials = function (email, password) {
+//   return this.findOne({ email }).select('+password')
+//     .then((user) => {
+//       if (!user) {
+//         throw new Unauthorized({ message: 'Указан некорректный Email или пароль.' });
+//       }
+//       return bcrypt.compare(password, user.password)
+//         .then((matched) => {
+//           if (!matched) {
+//             throw new Unauthorized({ message: 'Указан некорректный Email или пароль.' });
+//           }
+//           return user;
+//         });
+//     });
+// };
 
 // создаём модель и экспортируем её
 module.exports = mongoose.model('user', userSchema);

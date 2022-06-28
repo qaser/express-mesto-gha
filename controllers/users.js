@@ -5,6 +5,7 @@ const NotFoundError = require('../errors/NotFoundError');
 const ConflictError = require('../errors/ConflictError');
 const BadRequestError = require('../errors/BadRequestError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
+const ForbiddenError = require('../errors/ForbiddenError');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -128,20 +129,40 @@ module.exports.updateUserAvatar = (req, res, next) => {
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  return User.findUserByCredentials(email, password)
+
+  if (!email || !password) {
+    throw new UnauthorizedError('Неверные почта или пароль');
+  }
+
+  User.findOne({ email })
+    .select('+password')
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-      res.cookie('jwt', token, {
-        maxAge: 3600000 * 24 * 7,
-        httpOnly: true,
-        sameSite: true,
-      });
-      res.status(201).send({ message: 'Авторизация успешна', token });
+      if (!user) {
+        throw new UnauthorizedError('Неверные почта или пароль');
+      } else {
+        bcrypt.compare(password, user.password, ((err, valid) => {
+          if (err) {
+            throw new ForbiddenError('Ошибка доступа');
+          }
+
+          if (!valid) {
+            throw new UnauthorizedError('Неверные почта или пароль');
+          } else {
+            const token = jwt.sign({ _id: user._id }, 'some-secret-key', {
+              expiresIn: '7d',
+            });
+
+            return res
+              .cookie('jwt', token, {
+                httpOnly: true,
+                sameSite: true,
+              })
+              .send({ token });
+          }
+        }));
+      }
     })
     .catch((err) => {
-      if (err.message === 'IncorrectEmail') {
-        next(new UnauthorizedError('Не правильный логин или пароль'));
-      }
-      res.status(500).send({ message: 'Ошибка сервера' });
+      next(err);
     });
 };
