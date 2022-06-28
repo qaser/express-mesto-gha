@@ -54,19 +54,16 @@ module.exports.likeCard = (req, res, next) => {
     { new: true },
   )
     .orFail(() => {
-      throw new BadRequestError({ message: 'Переданы некорректные данные' });
+      throw new NotFoundError(
+        `Запрашиваемая карточка с id ${req.params.cardId} не найдена`,
+      );
     })
-    .then((card) => {
-      if (!card) {
-        throw new BadRequestError({ message: 'Переданы некорректные данные' });
-      }
-      res.status(200).send({ card });
-    })
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError({ message: err.errorMessage }));
+        next(new BadRequestError({ message: 'Переданы некорректные данные' }));
       }
-      res.status(500).send({ message: 'Ошибка сервера' });
+      return next(err);
     });
 };
 
