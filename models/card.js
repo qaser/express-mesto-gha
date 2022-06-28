@@ -1,6 +1,6 @@
 // models/user.js
 const mongoose = require('mongoose');
-const { isURL } = require('validator');
+const { regexUrl } = require('../middlewares/validationJoi');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -13,7 +13,9 @@ const cardSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (v) => isURL(v, { required_protocol: true }),
+      validator(v) {
+        return regexUrl.test(v);
+      },
       message: 'Это значение должно содержать url',
     },
   },

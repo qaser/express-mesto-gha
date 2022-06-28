@@ -3,8 +3,6 @@ const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const ForbiddenError = require('../errors/ForbiddenError');
 
-// const errorBadRequest = 'Передан несуществующий _id карточки';
-
 module.exports.getCards = (_req, res, next) => {
   Card.find({})
     .populate('owner')
@@ -23,10 +21,10 @@ module.exports.createCard = (req, res, next) => {
     link,
     owner,
   })
-    .then((card) => res.send(card))
+    .then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Введены некорректные данные'));
+        throw new BadRequestError('Введены некорректные данные');
       }
       next(err);
     });
@@ -41,7 +39,7 @@ module.exports.deleteCard = (req, res, next) => {
       })
       .catch((err) => {
         if (err.name === 'CastError') {
-          next(new BadRequestError('Введен некорректный id'));
+          throw new BadRequestError('Введен некорректный id');
         }
         next(err);
       });
@@ -75,7 +73,7 @@ module.exports.likeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Введен некорректный id'));
+        throw new BadRequestError('Введен некорректный id');
       }
       next(err);
     });
@@ -93,7 +91,7 @@ module.exports.dislikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Введен некорректный id'));
+        throw new BadRequestError('Введен некорректный id');
       }
       next(err);
     });

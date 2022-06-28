@@ -7,7 +7,6 @@ const errorHandler = require('./middlewares/errorHandler');
 const { registerValid, loginValid } = require('./middlewares/validationJoi');
 const { createUser, login } = require('./controllers/users');
 const NotFoundError = require('./errors/NotFoundError');
-// const { requestLogger, errorLoger } = require('./middlewares/logger');
 
 const { PORT = 3000 } = process.env; // Слушаем 3000 порт
 const app = express();
@@ -25,8 +24,6 @@ app.use(auth);
 
 app.use('/cards', require('./routes/cards'));
 app.use('/users', require('./routes/users'));
-
-// app.use(errorLoger);
 
 // обработка некорректного адреса
 app.use((req, res, next) => {

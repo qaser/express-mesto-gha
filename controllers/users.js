@@ -17,7 +17,7 @@ module.exports.getUserMe = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user._id) {
-        next(new NotFoundError('Пользователь не найден'));
+        throw new NotFoundError('Пользователь не найден');
       }
       res.status(200).send(user);
     })
@@ -36,9 +36,6 @@ module.exports.getUserById = (req, res, next) => {
       throw new NotFoundError('Пользователь не найден');
     })
     .then((user) => {
-      if (!user._id) {
-        next(new NotFoundError('Пользователь не найден'));
-      }
       res.status(200).send(user);
     })
     .catch((err) => {
@@ -61,7 +58,7 @@ module.exports.createUser = (req, res, next) => {
   User.findOne({ email })
     .then((user) => {
       if (user) {
-        next(new ConflictError(`Пользователь с таким email ${email} уже зарегистрирован`));
+        throw new ConflictError(`Пользователь с таким email ${email} уже зарегистрирован`);
       }
       return bcrypt.hash(password, 10);
     })
@@ -74,7 +71,7 @@ module.exports.createUser = (req, res, next) => {
     }))
     .then((user) => User.findOne({ _id: user._id })) // прячет пароль
     .then((user) => {
-      res.status(200).send(user);
+      res.status(201).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -82,7 +79,7 @@ module.exports.createUser = (req, res, next) => {
       } else if (err.code === 11000) {
         next(new ConflictError({ message: err.errorMessage }));
       } else {
-        res.status(500).send({ message: 'Ошибка сервера' });
+        next(err);
       }
     });
 };
@@ -91,19 +88,16 @@ module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail(() => {
-      throw new BadRequestError('Переданы некорректные данные');
+      throw new NotFoundError('Пользователь не найден');
     })
     .then((user) => {
-      if (!user) {
-        next(new BadRequestError('Переданы некорректные данные'));
-      }
       res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные'));
+        throw new BadRequestError('Переданы некорректные данные');
       }
-      res.status(500).send({ message: 'Ошибка сервера' });
+      next(err);
     });
 };
 
@@ -111,38 +105,30 @@ module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .orFail(() => {
-      throw new BadRequestError('Переданы некорректные данные');
+      throw new NotFoundError('Пользователь не найден');
     })
     .then((user) => {
-      if (!user) {
-        next(new BadRequestError('Переданы некорректные данные'));
-      }
       res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные'));
+        throw new BadRequestError('Переданы некорректные данные');
       }
-      res.status(500).send({ message: 'Ошибка сервера' });
+      next(err);
     });
 };
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-
-  if (!email || !password) {
-    throw new UnauthorizedError('Неверные почта или пароль');
-  }
-
   User.findOne({ email })
     .select('+password')
     .then((user) => {
       if (!user) {
-        throw new UnauthorizedError('Неверные почта или пароль');
+        next(new UnauthorizedError('Неверные почта или пароль'));
       } else {
         bcrypt.compare(password, user.password, ((err, valid) => {
           if (err) {
-            throw new ForbiddenError('Ошибка доступа');
+            next(new ForbiddenError('Ошибка доступа'));
           }
 
           if (!valid) {
@@ -152,12 +138,7 @@ module.exports.login = (req, res, next) => {
               expiresIn: '7d',
             });
 
-            return res
-              .cookie('jwt', token, {
-                httpOnly: true,
-                sameSite: true,
-              })
-              .send({ token });
+            return res.send({ token });
           }
         }));
       }

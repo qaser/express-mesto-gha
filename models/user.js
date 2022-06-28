@@ -1,8 +1,7 @@
 // models/user.js
 const mongoose = require('mongoose');
-// const bcrypt = require('bcrypt');
-const { isEmail, isURL } = require('validator');
-// const Unauthorized = require('../errors/UnauthorizedError');
+const { isEmail } = require('validator');
+const { regexUrl } = require('../middlewares/validationJoi');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -21,7 +20,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     validate: {
-      validator: (v) => isURL(v, { required_protocol: true }),
+      validator(v) {
+        return regexUrl.test(v);
+      },
       message: "Поле 'avatar' не соответствует формату URL",
     },
   },
