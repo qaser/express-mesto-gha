@@ -54,11 +54,11 @@ module.exports.likeCard = (req, res, next) => {
     { new: true },
   )
     .orFail(() => {
-      throw new NotFoundError('Карточка не найдена');
+      throw new BadRequestError({ message: 'Переданы некорректные данные' });
     })
     .then((card) => {
       if (!card) {
-        next(new NotFoundError('Карточка не найдена'));
+        throw new BadRequestError({ message: 'Переданы некорректные данные' });
       }
       res.status(200).send({ card });
     })
