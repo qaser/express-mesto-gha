@@ -1,19 +1,19 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const Users = require('../models/user');
+const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const ConflictError = require('../errors/ConflictError');
 const BadRequestError = require('../errors/BadRequestError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 
-module.exports.getUser = (req, res, next) => {
-  Users.find({})
+module.exports.getUsers = (req, res, next) => {
+  User.find({})
     .then((user) => res.status(200).send(user))
     .catch((err) => next(err));
 };
 
 module.exports.getUserMe = (req, res, next) => {
-  Users.findById(req.user._id)
+  User.findById(req.user._id)
     .then((user) => {
       if (!user._id) {
         next(new NotFoundError('Пользователь не найден'));
@@ -29,8 +29,8 @@ module.exports.getUserMe = (req, res, next) => {
     });
 };
 
-module.exports.getUserId = (req, res, next) => {
-  Users.findById(req.params.userId)
+module.exports.getUserById = (req, res, next) => {
+  User.findById(req.params.userId)
     .orFail(() => {
       throw new NotFoundError('Пользователь не найден');
     })
@@ -58,21 +58,21 @@ module.exports.createUser = (req, res, next) => {
     password,
   } = req.body;
 
-  Users.findOne({ email })
+  User.findOne({ email })
     .then((user) => {
       if (user) {
         next(new ConflictError(`Пользователь с таким email ${email} уже зарегистрирован`));
       }
       return bcrypt.hash(password, 10);
     })
-    .then((hash) => Users.create({
+    .then((hash) => User.create({
       name,
       about,
       avatar,
       email,
       password: hash,
     }))
-    .then((user) => Users.findOne({ _id: user._id })) // прячет пароль
+    .then((user) => User.findOne({ _id: user._id })) // прячет пароль
     .then((user) => {
       res.status(200).send(user);
     })
@@ -87,9 +87,9 @@ module.exports.createUser = (req, res, next) => {
     });
 };
 
-module.exports.updateUserInfo = (req, res, next) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
-  Users.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail(() => {
       throw new BadRequestError('Переданы некорректные данные');
     })
@@ -107,9 +107,9 @@ module.exports.updateUserInfo = (req, res, next) => {
     });
 };
 
-module.exports.updateAvatar = (req, res, next) => {
+module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  Users.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .orFail(() => {
       throw new BadRequestError('Переданы некорректные данные');
     })
@@ -129,7 +129,7 @@ module.exports.updateAvatar = (req, res, next) => {
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  return Users.findUserByCredentials(email, password)
+  return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       res.cookie('jwt', token, {
