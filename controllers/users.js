@@ -129,11 +129,11 @@ module.exports.login = (req, res, next) => {
       } else {
         bcrypt.compare(password, user.password, ((err, valid) => {
           if (err) {
-            next(new ForbiddenError('Ошибка доступа'));
+            return next(new ForbiddenError('Ошибка доступа'));
           }
 
           if (!valid) {
-            throw new UnauthorizedError('Неверные почта или пароль');
+            next(new UnauthorizedError('Неверные почта или пароль'));
           } else {
             const token = jwt.sign({ _id: user._id }, 'some-secret-key', {
               expiresIn: '7d',
