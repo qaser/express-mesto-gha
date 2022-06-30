@@ -24,10 +24,9 @@ module.exports.createCard = (req, res, next) => {
     .then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Введены некорректные данные'));
-      } else {
-        next(err);
+        throw new BadRequestError('Введены некорректные данные');
       }
+      next(err);
     });
 };
 
@@ -63,10 +62,9 @@ module.exports.likeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Введен некорректный id'));
-      } else {
-        next(err);
+        throw new BadRequestError('Введен некорректный id');
       }
+      next(err);
     });
 };
 
@@ -82,9 +80,8 @@ module.exports.dislikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Введен некорректный id'));
-      } else {
-        next(err);
+        throw new BadRequestError('Введен некорректный id');
       }
+      next(err);
     });
 };

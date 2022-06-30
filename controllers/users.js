@@ -5,7 +5,7 @@ const NotFoundError = require('../errors/NotFoundError');
 const ConflictError = require('../errors/ConflictError');
 const BadRequestError = require('../errors/BadRequestError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
-// const ForbiddenError = require('../errors/ForbiddenError');
+const ForbiddenError = require('../errors/ForbiddenError');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -94,7 +94,7 @@ module.exports.updateUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные'));
+        throw new BadRequestError('Переданы некорректные данные');
       } else {
         next(err);
       }
@@ -112,10 +112,9 @@ module.exports.updateUserAvatar = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные'));
-      } else {
-        next(err);
+        throw new BadRequestError('Переданы некорректные данные');
       }
+      next(err);
     });
 };
 
@@ -129,8 +128,9 @@ module.exports.login = (req, res, next) => {
       } else {
         bcrypt.compare(password, user.password, ((err, valid) => {
           if (err) {
-            next(err);
+            next(new ForbiddenError('Ошибка доступа'));
           }
+
           if (!valid) {
             throw new UnauthorizedError('Неверные почта или пароль');
           } else {
