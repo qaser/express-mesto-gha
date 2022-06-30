@@ -83,8 +83,9 @@ module.exports.dislikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Введен некорректный id');
+        next(new BadRequestError('Введен некорректный id'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
