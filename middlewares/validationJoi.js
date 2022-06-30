@@ -1,6 +1,5 @@
 const { celebrate, Joi } = require('celebrate');
-
-const regexUrl = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)/;
+const { regexUrl } = require('../utils/constants');
 
 const validateUrl = (value, helpers) => {
   if (!regexUrl.test(value)) {
@@ -48,7 +47,7 @@ const userValid = celebrate({
 
 const parameterIdValid = (nameId) => celebrate({
   params: Joi.object().keys({
-    [nameId]: Joi.string().hex().length(24),
+    [nameId]: Joi.string().hex().length(24).required(),
   }),
 });
 
@@ -59,5 +58,4 @@ module.exports = {
   createCardValid,
   parameterIdValid,
   userValid,
-  regexUrl,
 };

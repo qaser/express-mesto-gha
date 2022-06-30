@@ -1,7 +1,7 @@
 // models/user.js
 const mongoose = require('mongoose');
 const { isEmail } = require('validator');
-const { regexUrl } = require('../middlewares/validationJoi');
+const { regexUrl } = require('../utils/constants');
 
 const userSchema = new mongoose.Schema({
   name: {
