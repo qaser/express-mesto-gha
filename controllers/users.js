@@ -5,7 +5,7 @@ const NotFoundError = require('../errors/NotFoundError');
 const ConflictError = require('../errors/ConflictError');
 const BadRequestError = require('../errors/BadRequestError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
-const ForbiddenError = require('../errors/ForbiddenError');
+// const ForbiddenError = require('../errors/ForbiddenError');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -125,24 +125,18 @@ module.exports.login = (req, res, next) => {
     .select('+password')
     .then((user) => {
       if (!user) {
-        next(new UnauthorizedError('Неверные почта или пароль'));
-      } else {
-        bcrypt.compare(password, user.password, ((err, valid) => {
-          if (err) {
-            return next(new ForbiddenError('Ошибка доступа'));
-          }
-
-          if (!valid) {
-            next(new UnauthorizedError('Неверные почта или пароль'));
-          } else {
-            const token = jwt.sign({ _id: user._id }, 'some-secret-key', {
-              expiresIn: '7d',
-            });
-
-            return res.send({ token });
-          }
-        }));
+        throw new UnauthorizedError('Неверные почта или пароль');
       }
+      return Promise.all([user, bcrypt.compare(password, user.password)]);
+    })
+    .then(([user, valid]) => {
+      if (!valid) {
+        throw new UnauthorizedError('Неверные почта или пароль');
+      }
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', {
+        expiresIn: '7d',
+      });
+      return res.send({ token });
     })
     .catch((err) => {
       next(err);
